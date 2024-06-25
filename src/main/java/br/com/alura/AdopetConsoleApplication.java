@@ -27,11 +27,11 @@ public class AdopetConsoleApplication {
                 opcaoEscolhida = Integer.parseInt(textoDigitado);
 
                 if (opcaoEscolhida == 1) {
-                    petService.listarPetsDoAbrigo();
+                    abrigoService.listarAbrigos();
                 } else if (opcaoEscolhida == 2) {
                     abrigoService.cadastrarAbrigo();
                 } else if (opcaoEscolhida == 3) {
-                    abrigoService.listarPetsAbrigo();
+                    petService.listarPetsDoAbrigo();
                 } else if (opcaoEscolhida == 4) {
                     petService.importarPetsDoAbrigo();
                 } else if (opcaoEscolhida == 5) {

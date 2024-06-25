@@ -1,6 +1,7 @@
 package br.com.alura.service;
 
 import br.com.alura.client.ClientHttpConfiguration;
+import br.com.alura.domain.Pet;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -21,16 +22,26 @@ public class PetService {
     }
 
     public void listarPetsDoAbrigo() throws IOException, InterruptedException {
-        String uri = "http://localhost:8080/abrigos";
+        System.out.println("Digite o id ou nome do abrigo:");
+        String idOuNome = new Scanner(System.in).nextLine();
+
+        String uri = "http://localhost:8080/abrigos/" +idOuNome +"/pets";
         HttpResponse<String> response =  client.dispararRequisicaoGet(uri);
+        int statusCode = response.statusCode();
+        if (statusCode == 404 || statusCode == 500) {
+            System.out.println("ID ou nome não cadastrado!");
+        }
         String responseBody = response.body();
         JsonArray jsonArray = JsonParser.parseString(responseBody).getAsJsonArray();
-        System.out.println("Abrigos cadastrados:");
+        System.out.println("Pets cadastrados:");
         for (JsonElement element : jsonArray) {
             JsonObject jsonObject = element.getAsJsonObject();
             long id = jsonObject.get("id").getAsLong();
+            String tipo = jsonObject.get("tipo").getAsString();
             String nome = jsonObject.get("nome").getAsString();
-            System.out.println(id +" - " +nome);
+            String raca = jsonObject.get("raca").getAsString();
+            int idade = jsonObject.get("idade").getAsInt();
+            System.out.println(id +" - " +tipo +" - " +nome +" - " +raca +" - " +idade +" ano(s)");
         }
     }
 
@@ -57,16 +68,10 @@ public class PetService {
             String cor = campos[4];
             Float peso = Float.parseFloat(campos[5]);
 
-            JsonObject json = new JsonObject();
-            json.addProperty("tipo", tipo.toUpperCase());
-            json.addProperty("nome", nome);
-            json.addProperty("raca", raca);
-            json.addProperty("idade", idade);
-            json.addProperty("cor", cor);
-            json.addProperty("peso", peso);
+            Pet pet = new Pet(tipo, nome, raca, idade, cor, peso);
 
             String uri = "http://localhost:8080/abrigos/" + idOuNome + "/pets";
-            HttpResponse<String> response = client.dispararRequisicaoPost(uri, json);
+            HttpResponse<String> response = client.dispararRequisicaoPost(uri, pet);
             int statusCode = response.statusCode();
             String responseBody = response.body();
             if (statusCode == 200) {
